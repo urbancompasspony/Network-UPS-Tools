@@ -1,0 +1,83 @@
+MODEL: Nobreak TS SHARA UPS Senoidal Xpro IOT Universal 1800VA E. Bivolt S.115V/220V Bat.2x7Ah C/ENG/USB 8Tom+1Wifi
+
+$ lsusb
+Bus 003 Device 002: ID 0483:5740 STMicroelectronics Virtual COM Port
+
+$ udevadm info -a -n /dev/ttyACM0
+  looking at parent device '/devices/pci0000:00/0000:00:12.0/usb3/3-2':
+    KERNELS=="3-2"
+    SUBSYSTEMS=="usb"
+    DRIVERS=="usb"
+    ATTRS{bNumConfigurations}=="1"
+    ATTRS{bMaxPower}=="100mA"
+    ATTRS{maxchild}=="0"
+    ATTRS{rx_lanes}=="1"
+    ATTRS{bConfigurationValue}=="1"
+    ATTRS{configuration}==""
+    ATTRS{bMaxPacketSize0}=="64"
+    ATTRS{version}==" 2.00"
+    ATTRS{avoid_reset_quirk}=="0"
+    ATTRS{devnum}=="2"
+    ATTRS{product}=="STM32 Virtual ComPort"
+    ATTRS{tx_lanes}=="1"
+    ATTRS{ltm_capable}=="no"
+    ATTRS{bDeviceSubClass}=="02"
+    ATTRS{serial}=="00000000001A"
+    ATTRS{urbnum}=="14"
+    ATTRS{bmAttributes}=="c0"
+    ATTRS{quirks}=="0x0"
+    ATTRS{speed}=="12"
+    ATTRS{removable}=="unknown"
+    ATTRS{bcdDevice}=="0200"
+    ATTRS{idVendor}=="0483"
+    ATTRS{authorized}=="1"
+    ATTRS{bDeviceClass}=="02"
+    ATTRS{busnum}=="3"
+    ATTRS{manufacturer}=="STMicroelectronics"
+    ATTRS{bDeviceProtocol}=="00"
+    ATTRS{devpath}=="2"
+    ATTRS{idProduct}=="5740"
+    ATTRS{bNumInterfaces}==" 2"
+
+Create a udev rule:
+$ sudo nano /etc/udev/rules.d/99-ups-tsshara.rules
+
+SUBSYSTEM=="tty",ATTRS{idVendor}=="0483",ATTRS{idProduct}=="5740",ATTRS{serial}=="00000000001A",GROUP="nut",OWNER="root",MODE="0664",SYMLINK+="ttyTSSHARA0"
+
+$ sudo udevadm control --reload; sudo udevadm trigger
+
+Check:
+$ ls -l /dev/ttyACM0
+OUTPUT: crw-rw---- 1 root nut 166, 0 mai 27 16:29 /dev/ttyACM0
+$ ls -l /dev/ttyTSSHARA0
+OUTPUT: lrwxrwxrwx 1 root root 7 mai 27 14:49 /dev/ttyTSSHARA0 -> ttyACM0
+
+Edit:
+$ sudo nano /etc/nut/ups.conf
+max entries = 3
+
+[tsshara]
+  driver = "blazer_ser"
+  port = "/dev/ttyTSSHARA0"
+  desc = "TS Shara"
+  default.battery.voltage.high = "26.00"
+  default.battery.voltage.low = "20.80"
+  default.battery.voltage.nominal = "24.00"
+  runtimecal = "3600,100,7200,50"
+
+$ sudo nano /etc/nut/upsd.users
+[upsmon]
+  password = "<PASSWORD>"
+  upsmon master
+  actions = SET
+  instcmds = ALL
+
+$ sudo nano /etc/nut/upsd.conf
+
+LISTEN 0.0.0.0 3493
+
+$ sudo nano /etc/nut/nut.conf
+
+MODE=netserver
+
+$ sudo systemctl start nut-server.service; sudo systemctl status nut-server.service; sudo systemctl enable nut-server.service
