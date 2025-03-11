@@ -1,0 +1,28 @@
+Testing NUT
+There are three different layers of testing you can do, to verify NUT is running correctly.
+
+NOTE: These options could result in data loss! Make sure you're not doing any critical activities on the systems while you're testing your power setup...
+
+1 - NUT Debug / test mode
+I... never tried this, but apparently you can do a 'soft test' following the instructions in Dan Langille's blog: nut – testing the shutdown mechanism
+
+2 - Live test of NUT without unplugging NAS
+You can trigger the fsd event manually on the NUT Pi server with:
+
+upsmon -c fsd
+That will immediately emulate the condition of the UPS status OB LB (On Battery / Low Battery), which tells all connected systems to run their shutdown command.
+
+3 - Live end-to-end test with UPS on battery
+Unplug your UPS. Monitor the stats with upsc (like upsc server-room-rack, for mine), and validate the various parameters are correct for your NAS.
+
+Wait a while, and keep an eye on metrics like:
+
+$ upsc server-room-rack
+battery.charge: 32
+...
+battery.voltage: 51.30
+...
+ups.load: 11
+...
+ups.status: OL
+At some point, the UPS will have a status like OL LB or ALARM OB, and NUT should trigger shutdowns on all your connected NUT clients.
