@@ -79,14 +79,10 @@ Edit:
 $ sudo nano /etc/nut/ups.conf
 max entries = 3
 
-[sms]
+[SMS]
   driver = "blazer_ser"
   port = "/dev/ttySMS"
   desc = "SMS"
-  default.battery.voltage.high = "26.00"
-  default.battery.voltage.low = "20.80"
-  default.battery.voltage.nominal = "24.00"
-  runtimecal = "3600,100,7200,50"
 
 $ sudo nano /etc/nut/upsd.users
 [upsmon]
@@ -95,7 +91,7 @@ $ sudo nano /etc/nut/upsd.users
   actions = SET
   instcmds = ALL
 
-$ sudo nano /etc/nut/upsd.conf
+$ x
 
 LISTEN 0.0.0.0 3493
 
