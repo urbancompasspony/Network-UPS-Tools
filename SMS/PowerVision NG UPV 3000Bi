@@ -81,8 +81,8 @@ max entries = 3
 
 [SMS]
   driver = "blazer_ser"
-  port = "/dev/ttySMS"
-  desc = "SMS"
+  port = "/dev/ttyUSB0"
+  desc = "WR"
 
 $ sudo nano /etc/nut/upsd.users
 [upsmon]
