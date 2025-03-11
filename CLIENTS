@@ -1,2 +1,15 @@
 WIP
 https://www.jeffgeerling.com/blog/2025/nut-on-my-pi-so-my-servers-dont-die
+
+Managing the connected UPS
+On the NUT Pi server, you can use upscmd to manage the connected UPS, using the admin user, for example:
+
+# List commands supported on this UPS
+upscmd -l server-room-rack
+
+# Run a quick battery test (requires password)
+upscmd -u admin server-room-rack test.battery.start.quick
+Debian 12 upsmon bug
+When I did this last command, I unintentionally triggered a bug with the current version of nut-client on Debian 12... if a UPS self-test is run, the 'CAL' flag is set (calibration), and while it's set, any critical UPS battery alerts are ignored! (See the original NUT bug report.)
+
+There's a bug report in Debian currently: CAL flag in UPSMON never cleared, shutdown procedure will not be triggered, and one workaround is to restart nut-client (sudo systemctl restart nut-client) on a cron job, maybe every hour, or if you know your UPS self-test schedule, immediately following.
