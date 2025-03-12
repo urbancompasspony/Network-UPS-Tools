@@ -92,7 +92,7 @@ $ sudo nano /etc/nut/upsd.users
   actions = SET
   instcmds = ALL
 
-$ x
+$ sudo nano /etc/nut/upsd.conf
 
 LISTEN 0.0.0.0 3493
 
