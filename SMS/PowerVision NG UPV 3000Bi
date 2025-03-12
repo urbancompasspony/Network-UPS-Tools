@@ -65,7 +65,8 @@ $ udevadm info -a -n /dev/ttyACM0
 Create a udev rule:
 $ sudo nano /etc/udev/rules.d/99-ups-sms.rules
 
-SUBSYSTEM=="tty",ATTRS{idVendor}=="067b",ATTRS{idProduct}=="23a3",ATTRS{serial}=="FLDBb114J19",GROUP="nut",OWNER="root",MODE="0664",SYMLINK+="ttySMS"
+Trocar serial:
+SUBSYSTEM=="tty",ATTRS{idVendor}=="067b",ATTRS{idProduct}=="23a3",ATTRS{serial}=="SERIAL AQUI",GROUP="nut",OWNER="root",MODE="0664",SYMLINK+="ttySMS"
 
 $ sudo udevadm control --reload; sudo udevadm trigger
 
