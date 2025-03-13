@@ -3,7 +3,7 @@ MODEL: NOBREAK POWER VISION UPV3000BI NG
 $ lsusb
 Bus 003 Device 002: ID 067b:23a3 Prolific Technology, Inc. USB-Serial Controller 
 
-$ udevadm info -a -n /dev/ttyACM0
+$ udevadm info -a -n /dev/ttyUSB0
  looking at parent device '/devices/pci0000:00/0000:00:14.0/usb3/3-11':
     KERNELS=="3-11"
     SUBSYSTEMS=="usb"
@@ -62,7 +62,11 @@ $ udevadm info -a -n /dev/ttyACM0
     ATTRS{urbnum}=="12"
     ATTRS{version}==" 2.00"
 
-$ sudo cp /lib/udev/rules.d/62-nut-usbups.rules /etc/udev/rules.d/99-ups-sms.rules
+Create a udev rule:
+$ sudo nano /etc/udev/rules.d/99-ups-sms.rules
+
+Trocar serial:
+SUBSYSTEM=="tty",ATTRS{idVendor}=="067b",ATTRS{idProduct}=="23a3",ATTRS{serial}=="SERIAL AQUI",GROUP="nut",OWNER="root",MODE="0664",SYMLINK+="ttySMS"
 
 $ sudo udevadm control --reload; sudo udevadm trigger
 
